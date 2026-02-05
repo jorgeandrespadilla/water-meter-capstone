@@ -1,0 +1,19 @@
+model:
+  weights: yolov8n-obb.pt
+training:
+  epochs: 100
+  img_size: 640
+  batch_size: 16
+  patience: 20
+dataset:
+  source: data/obb-seed
+  train_images: 240
+  val_images: 60
+metadata:
+  exported_on: '2026-02-25 09:44:06'
+  purpose: Pre-anotacion OBB para CVAT
+metrics:
+  mAP50-95: 0.952
+  mAP50: 0.995
+  precision: 1.0
+  recall: 1.0
