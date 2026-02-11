@@ -1,0 +1,22 @@
+run:
+  name: baseline
+  description: "Configuracion base: yolov8n-obb, 640px, 100 epochs"
+model:
+  weights: yolov8n-obb.pt
+training:
+  epochs_configured: 100
+  epochs_trained: 100
+  img_size: 640
+  batch_size: 16
+  patience: 50
+dataset:
+  train_images: 959
+  val_images: 120
+  test_images: 120
+metadata:
+  exported_on: '2026-02-25 08:45:41'
+metrics:
+  mAP50-95: 0.9609
+  mAP50: 0.995
+  precision: 0.9995
+  recall: 1.0
