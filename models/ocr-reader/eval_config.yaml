@@ -1,0 +1,39 @@
+run:
+  name: f2/iter6-mask-lab
+  description: "Iter 6: Fine-tuning en_PP-OCRv4_mobile_rec con crops regenerados con\
+    \ la m\xE1scara LAB refinada"
+model:
+  ocr_version: en_PP-OCRv4_mobile_rec
+  ocr_det_model_name: DISABLED (rec-only)
+  ocr_model_name: en_PP-OCRv4_mobile_rec (fine-tuned)
+  sanitization: true
+  fine_tuned: true
+  epochs: 20
+  learning_rate: 0.0001
+  batch_size: 8
+  dictionary: digit-only (0-9)
+evaluation:
+  split: val
+  total_images: 120
+  avg_time_ms: 17.3
+metrics:
+  global:
+    exact_match: 0.8917
+    cer: 0.0262
+    crr: 0.9738
+    total: 120
+    correct: 107
+  with_decimal:
+    exact_match: 0.8929
+    cer: 0.0249
+    crr: 0.9751
+    total: 84
+    correct: 75
+  without_decimal:
+    exact_match: 0.8889
+    cer: 0.0287
+    crr: 0.9713
+    total: 36
+    correct: 32
+metadata:
+  exported_on: '2026-03-19 22:32:13'
