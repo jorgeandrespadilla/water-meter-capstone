@@ -1,0 +1,94 @@
+{
+  "generated_at": "2026-03-24T02:45:53",
+  "data_root": "data",
+  "split": "test",
+  "threshold": 0.7,
+  "total_rows": 120,
+  "images_found": 120,
+  "images_missing": 0,
+  "metrics": {
+    "end_to_end_accuracy": 0.9583,
+    "strict_match_rate": 0.9417,
+    "readable_rate": 1.0,
+    "accuracy_when_readable": 0.9583,
+    "auto_validation_rate": 0.9333,
+    "auto_validation_precision": 0.9643,
+    "auto_validation_error_rate": 0.0357,
+    "review_rate": 0.0667,
+    "no_detection_rate": 0.0,
+    "correct_but_reviewed_rate": 0.0583
+  },
+  "counts": {
+    "status": {
+      "valid": 112,
+      "needs_review": 8
+    },
+    "outcome": {
+      "match": 115,
+      "mismatch": 5
+    },
+    "valid_correct": 108,
+    "valid_incorrect": 4,
+    "correct_but_reviewed": 7
+  },
+  "latency_ms": {
+    "total": {
+      "mean": 434.9,
+      "median": 409.9,
+      "p95": 596.2
+    },
+    "detection": {
+      "mean": 181.9,
+      "median": 163.5,
+      "p95": 264.1
+    },
+    "preprocessing": {
+      "mean": 41.8,
+      "median": 37.1,
+      "p95": 69.1
+    },
+    "ocr": {
+      "mean": 210.6,
+      "median": 162.8,
+      "p95": 330.8
+    }
+  },
+  "subgroups": {
+    "background": {
+      "bgblack": {
+        "total": 5,
+        "match_rate": 1.0,
+        "readable_rate": 1.0
+      },
+      "bgwhite": {
+        "total": 115,
+        "match_rate": 0.9565,
+        "readable_rate": 1.0
+      }
+    },
+    "has_decimal": {
+      "False": {
+        "total": 36,
+        "match_rate": 0.9167,
+        "readable_rate": 1.0
+      },
+      "True": {
+        "total": 84,
+        "match_rate": 0.9762,
+        "readable_rate": 1.0
+      }
+    },
+    "n_digits": {
+      "4": {
+        "total": 63,
+        "match_rate": 0.9365,
+        "readable_rate": 1.0
+      },
+      "5": {
+        "total": 57,
+        "match_rate": 0.9825,
+        "readable_rate": 1.0
+      }
+    }
+  }
+}

@@ -3,7 +3,7 @@
 Combines YOLO OBB odometer detection with PaddleOCR digit recognition
 to produce a reading from a raw water meter image.
 
-Pipeline flow (see docs/_final/pipeline-technical-definitions.md §7):
+Pipeline flow:
     Raw image → YOLO OBB detect → crop → hybrid orientation (ensure
     landscape → red-position cue → dual-OCR fallback) → color masking
     (LAB v4) → sanitize → output

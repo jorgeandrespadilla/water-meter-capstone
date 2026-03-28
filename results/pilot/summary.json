@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-03-24T02:52:01",
+  "pilot_root": "data/pilot",
+  "threshold": 0.7,
+  "total_rows": 300,
+  "images_found": 300,
+  "images_missing": 0,
+  "metrics": {
+    "pilot_match_rate": 0.8267,
+    "readable_rate": 0.9267,
+    "accuracy_when_readable": 0.8921,
+    "auto_validation_rate": 0.8333,
+    "auto_validation_precision": 0.904,
+    "auto_validation_error_rate": 0.096,
+    "review_rate": 0.1,
+    "no_detection_rate": 0.0667,
+    "correct_but_reviewed_rate": 0.0733
+  },
+  "counts": {
+    "status": {
+      "no_detection": 20,
+      "valid": 250,
+      "needs_review": 30
+    },
+    "outcome": {
+      "no_detection": 20,
+      "mismatch": 30,
+      "match": 248,
+      "no_reading": 2
+    },
+    "valid_correct": 226,
+    "valid_incorrect": 24,
+    "correct_but_reviewed": 22
+  },
+  "latency_ms": {
+    "total": {
+      "mean": 1152.7,
+      "median": 764.3,
+      "p95": 1508.9
+    },
+    "detection": {
+      "mean": 293.1,
+      "median": 199.1,
+      "p95": 334.8
+    },
+    "preprocessing": {
+      "mean": 447.2,
+      "median": 304.6,
+      "p95": 710.2
+    },
+    "ocr": {
+      "mean": 473.2,
+      "median": 194.7,
+      "p95": 560.9
+    }
+  },
+  "subgroups": {
+    "1": {
+      "total": 7,
+      "match_rate": 0.7143,
+      "readable_rate": 0.8571
+    },
+    "2": {
+      "total": 11,
+      "match_rate": 1.0,
+      "readable_rate": 1.0
+    },
+    "3": {
+      "total": 51,
+      "match_rate": 0.8431,
+      "readable_rate": 0.8627
+    },
+    "4": {
+      "total": 212,
+      "match_rate": 0.8349,
+      "readable_rate": 0.9434
+    },
+    "5": {
+      "total": 19,
+      "match_rate": 0.6316,
+      "readable_rate": 0.8947
+    }
+  }
+}
