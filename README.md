@@ -22,9 +22,7 @@ SOLYTEC es una empresa ecuatoriana de tecnología especializada en servicios de 
 
 ## Arquitectura del Pipeline
 
-```
-Imagen --> Detector YOLO OBB --> Recorte OBB --> Resolución de Orientación --> Máscara Decimal --> PaddleOCR --> Validación
-```
+![Arquitectura del Sistema](docs/images/arquitectura_alto_nivel.png)
 
 El pipeline opera en seis etapas secuenciales:
 
@@ -51,6 +49,8 @@ El proyecto partió de ~3,200 imágenes operativas proporcionadas por SOLYTEC, c
 | Válida | 1,199 | Odómetro visible y dígitos legibles |
 | Inválida | ~1,200 | Sin medidor, tapa cerrada, desenfoque extremo |
 | Ambigua | ~800 | Modelos raros, obstrucciones parciales, calidad deficiente |
+
+![Ejemplos de Clasificación](docs/images/classification_examples.png)
 
 ### Proceso de Anotación
 
@@ -140,6 +140,8 @@ python app/demo.py
 python -m app.api
 # Documentación en http://localhost:8000/docs
 ```
+
+![Demo del Pipeline](docs/images/demo-pipeline-integrado.png)
 
 ## Uso Programático
 
