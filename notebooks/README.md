@@ -1,21 +1,21 @@
 # Notebooks
 
-Notebooks de Jupyter para entrenamiento, evaluacion y analisis del pipeline.
+Notebooks de Jupyter para entrenamiento, evaluación y análisis del pipeline.
 
-| Notebook | Descripcion |
+| Notebook | Descripción |
 |----------|-------------|
-| `01_eda.ipynb` | Analisis exploratorio de datos: distribucion de lotes, balance de clases, dimensiones |
-| `02_train_auto_annotator.ipynb` | Entrenamiento del modelo auxiliar YOLO OBB para pre-anotacion (300 imagenes semilla) |
-| `03_train_odometer_detector.ipynb` | Entrenamiento iterativo del detector de odometros YOLO OBB (1,199 imagenes) |
-| `04_eval_ocr.ipynb` | Evaluacion de modelos OCR: comparacion de preprocessing y configuraciones |
-| `05_finetune_ocr.ipynb` | Fine-tuning del reconocedor PaddleOCR con diccionario de solo digitos |
-| `06_explainability.ipynb` | Analisis de explicabilidad: Grad-CAM, EigenCAM, SHAP, LIME, oclusion |
-| `07_visualize_pipeline_evaluations.ipynb` | Visualizacion comparativa de metricas: evolucion por iteracion, threshold sweep |
+| `01_eda.ipynb` | Análisis exploratorio de datos: distribución de lotes, balance de clases, dimensiones |
+| `02_train_auto_annotator.ipynb` | Entrenamiento del modelo auxiliar YOLO OBB para pre-anotación (300 imágenes semilla) |
+| `03_train_odometer_detector.ipynb` | Entrenamiento iterativo del detector de odómetros YOLO OBB (1,199 imágenes) |
+| `04_eval_ocr.ipynb` | Evaluación de modelos OCR: comparación de preprocessing y configuraciones |
+| `05_finetune_ocr.ipynb` | Fine-tuning del reconocedor PaddleOCR con diccionario de solo dígitos |
+| `06_explainability.ipynb` | Análisis de explicabilidad: Grad-CAM, EigenCAM, SHAP, LIME, oclusión |
+| `07_visualize_pipeline_evaluations.ipynb` | Visualización comparativa de métricas: evolución por iteración, threshold sweep |
 
-## Ejecucion
+## Ejecución
 
-Los notebooks estan diseñados para ejecutarse en orden secuencial. Cada notebook incluye
+Los notebooks están diseñados para ejecutarse en orden secuencial. Cada notebook incluye
 las salidas pre-computadas, por lo que pueden revisarse sin necesidad de re-ejecutar.
 
-Para re-ejecutar, asegurese de tener los datos y modelos disponibles en las rutas esperadas
+Para re-ejecutar, asegúrese de tener los datos y modelos disponibles en las rutas esperadas
 (ver `data/README.md` y `models/README.md`).

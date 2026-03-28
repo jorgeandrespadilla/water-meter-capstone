@@ -1,55 +1,57 @@
-# Water Meter ML Pipeline
+# Lectura Automática de Medidores de Agua
 
-Pipeline de ML para lectura automatica de odometros en medidores de agua.
-Combina deteccion de odometros (YOLO OBB) y lectura de digitos (PaddleOCR fine-tuned).
+Proyecto Capstone de Maestría en Inteligencia Artificial - UDLA.
 
-## Descripcion del Problema
+Pipeline de ML para lectura automática de odómetros en medidores de agua.
+Combina detección de odómetros (YOLO OBB) y lectura de dígitos (PaddleOCR fine-tuned).
 
-Las empresas de agua potable realizan miles de lecturas mensuales de medidores mediante fotografias tomadas en campo. La digitacion manual de estas lecturas presenta tasas de error del 3-5%, generando reclamos y perdida de ingresos. Este proyecto implementa un pipeline de ML que automatiza la extraccion y validacion de lecturas a partir de las fotografias.
+## Descripción del Problema
+
+Las empresas de agua potable realizan miles de lecturas mensuales de medidores mediante fotografías tomadas en campo. La digitación manual de estas lecturas presenta tasas de error del 3-5%, generando reclamos y pérdida de ingresos. Este proyecto implementa un pipeline de ML que automatiza la extracción y validación de lecturas a partir de las fotografías.
 
 ## Arquitectura del Pipeline
 
 ```
-Imagen --> Detector YOLO OBB --> Recorte OBB --> Resolucion de Orientacion --> Mascara Decimal --> PaddleOCR --> Lectura
+Imagen --> Detector YOLO OBB --> Recorte OBB --> Resolución de Orientación --> Máscara Decimal --> PaddleOCR --> Lectura
 ```
 
 Etapas:
-1. **Deteccion**: Localiza el odometro en la imagen usando YOLO con Oriented Bounding Boxes (OBB)
-2. **Recorte**: Extrae el area del odometro con rotacion y alineacion
-3. **Orientacion**: Resuelve si el recorte esta invertido 180 grados (cascada: landscape, posicion del rojo, dual-OCR)
-4. **Mascara decimal**: Enmascara digitos rojos decimales mediante segmentacion LAB
-5. **OCR**: Lee los digitos con PaddleOCR fine-tuned
-6. **Validacion**: Clasifica la lectura como `valid`, `needs_review` o `no_detection` segun confianza global
+1. **Detección**: Localiza el odómetro en la imagen usando YOLO con Oriented Bounding Boxes (OBB)
+2. **Recorte**: Extrae el área del odómetro con rotación y alineación
+3. **Orientación**: Resuelve si el recorte está invertido 180 grados (cascada: landscape, posición del rojo, dual-OCR)
+4. **Máscara decimal**: Enmascara dígitos rojos decimales mediante segmentación LAB
+5. **OCR**: Lee los dígitos con PaddleOCR fine-tuned
+6. **Validación**: Clasifica la lectura como `valid`, `needs_review` o `no_detection` según confianza global
 
 ## Estructura del Proyecto
 
 ```
 water-meter-capstone/
-├── app/                         # Aplicacion (demo + API)
+├── app/                         # Aplicación (demo + API)
 │   ├── pipeline.py              # Pipeline de inferencia principal
 │   ├── api.py                   # REST API (FastAPI)
 │   └── demo.py                  # Demo interactivo (Gradio)
-├── utils/                       # Modulos de utilidad
+├── utils/                       # Módulos de utilidad
 │   ├── cropping.py              # Recorte OBB
-│   ├── orientation.py           # Resolucion de orientacion
-│   ├── masking.py               # Mascara de digitos rojos
-│   └── logging.py               # Configuracion de logging
+│   ├── orientation.py           # Resolución de orientación
+│   ├── masking.py               # Máscara de dígitos rojos
+│   └── logging.py               # Configuración de logging
 ├── scripts/
 │   ├── data/                    # Pipeline de datos (00-03 + builders)
-│   └── eval/                    # Scripts de evaluacion
-├── notebooks/                   # Notebooks de entrenamiento y analisis
+│   └── eval/                    # Scripts de evaluación
+├── notebooks/                   # Notebooks de entrenamiento y análisis
 ├── models/                      # Modelos entrenados
-│   ├── odometer-detector/       # YOLO OBB (produccion)
-│   ├── ocr-reader/              # PaddleOCR fine-tuned (produccion)
-│   └── auto-annotator/          # Modelo auxiliar de pre-anotacion
+│   ├── odometer-detector/       # YOLO OBB (producción)
+│   ├── ocr-reader/              # PaddleOCR fine-tuned (producción)
+│   └── auto-annotator/          # Modelo auxiliar de pre-anotación
 ├── data/                        # Datasets
 │   ├── annotations/             # Anotaciones CVAT + artefactos
 │   ├── obb/                     # Dataset YOLO OBB (train/val/test)
 │   └── ocr/                     # Dataset OCR (train/val/test)
-└── samples/                     # Imagenes de ejemplo para pruebas
+└── samples/                     # Imágenes de ejemplo para pruebas
 ```
 
-## Requisitos Tecnicos
+## Requisitos Técnicos
 
 - Python 3.12
 - ~800 MB de espacio en disco (modelos + datos)
@@ -57,7 +59,7 @@ water-meter-capstone/
 
 Dependencias principales: PyTorch, Ultralytics (YOLO), PaddleOCR, PaddlePaddle, Gradio, FastAPI.
 
-## Instrucciones de Ejecucion
+## Instrucciones de Ejecución
 
 ```bash
 # 1. Clonar el repositorio
@@ -78,10 +80,10 @@ python app/demo.py
 
 # 5. Ejecutar API REST (alternativa)
 python -m app.api
-# Documentacion en http://localhost:8000/docs
+# Documentación en http://localhost:8000/docs
 ```
 
-## Uso Programatico
+## Uso Programático
 
 ```python
 import cv2
@@ -98,47 +100,47 @@ print(f"Estado: {result.status}")
 
 ## Modelos
 
-| Modelo | Arquitectura | Metrica Principal | Valor |
+| Modelo | Arquitectura | Métrica Principal | Valor |
 |--------|-------------|-------------------|-------|
-| Detector de odometro | YOLOv8n-OBB | mAP50 | 0.995 |
+| Detector de odómetro | YOLOv8n-OBB | mAP50 | 0.995 |
 | Lector OCR | PP-OCRv4 mobile (fine-tuned) | Exact Match | 0.525 |
 | Auto-anotador (auxiliar) | YOLOv8s-OBB | mAP50 | 0.893 |
 
 Ver `models/README.md` para detalles de cada modelo.
 
-## Resultados de Evaluacion
+## Resultados de Evaluación
 
-| Evaluacion | Exact Match | Valid Rate |
-|-----------|-------------|------------|
-| End-to-end (test split) | 0.44 | 0.824 |
-| Piloto (datos no vistos) | 0.45 | 0.82 |
+| Evaluación | Exact Match | Valid Rate | Descripción |
+|-----------|-------------|------------|-------------|
+| End-to-end (test split) | 0.44 | 0.824 | Pipeline completo sobre split de prueba |
+| Piloto (datos no vistos) | 0.45 | 0.82 | Validación sobre datos de campo no vistos |
 
 Resultados detallados en los notebooks 04, 05 y 07.
 
 ## Notebooks
 
-| Notebook | Descripcion |
+| Notebook | Descripción |
 |----------|-------------|
-| `01_eda.ipynb` | Analisis exploratorio de datos |
-| `02_train_auto_annotator.ipynb` | Entrenamiento del modelo auxiliar de pre-anotacion |
+| `01_eda.ipynb` | Análisis exploratorio de datos |
+| `02_train_auto_annotator.ipynb` | Entrenamiento del modelo auxiliar de pre-anotación |
 | `03_train_odometer_detector.ipynb` | Entrenamiento del detector YOLO OBB (iterativo) |
-| `04_eval_ocr.ipynb` | Evaluacion de modelos OCR |
+| `04_eval_ocr.ipynb` | Evaluación de modelos OCR |
 | `05_finetune_ocr.ipynb` | Fine-tuning del reconocedor OCR |
-| `06_explainability.ipynb` | Analisis de explicabilidad (Grad-CAM, SHAP, LIME) |
-| `07_visualize_pipeline_evaluations.ipynb` | Visualizacion comparativa de resultados |
+| `06_explainability.ipynb` | Análisis de explicabilidad (Grad-CAM, SHAP, LIME) |
+| `07_visualize_pipeline_evaluations.ipynb` | Visualización comparativa de resultados |
 
 ## Pipeline de Datos
 
-| Script | Descripcion |
+| Script | Descripción |
 |--------|-------------|
 | `00_clean_raw_data.py` | Consolida lotes, normaliza JPEG |
-| `01_organize_classification.py` | Organiza imagenes por clase (valid/invalid/ambiguous) |
-| `02_crop_odometers.py` | Recorta odometros usando labels OBB |
+| `01_organize_classification.py` | Organiza imágenes por clase (valid/invalid/ambiguous) |
+| `02_crop_odometers.py` | Recorta odómetros usando labels OBB |
 | `03_generate_metadata.py` | Genera metadata con splits estratificados |
 | `build_obb.py` | Construye dataset YOLO OBB con splits |
-| `build_ocr.py` | Construye dataset OCR con rotacion y mascara decimal |
+| `build_ocr.py` | Construye dataset OCR con rotación y máscara decimal |
 
 ## Autores
 
-- Jorge Andres Padilla Salgado
+- Jorge Andrés Padilla Salgado
 - Alain Mateo Ruales Quezada
