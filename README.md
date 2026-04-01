@@ -1,8 +1,6 @@
 # Lectura Automática de Medidores de Agua
 
-Proyecto Capstone de Maestría en Inteligencia Artificial - UDLA.
-
-Pipeline de ML para lectura automática de odómetros en medidores de agua, desarrollado para la empresa SOLYTEC. Combina detección de odómetros (YOLO OBB), preprocesamiento de imagen y lectura de dígitos (PaddleOCR fine-tuned) con un esquema de validación human-in-the-loop.
+Pipeline de Machine Learning para lectura automática de odómetros en medidores de agua, desarrollado para la empresa SOLYTEC. Combina detección de odómetros (YOLO OBB), preprocesamiento de imagen y lectura de dígitos (PaddleOCR fine-tuned) con un esquema de validación human-in-the-loop.
 
 ## Descripción del Problema
 
@@ -18,7 +16,7 @@ SOLYTEC es una empresa ecuatoriana de tecnología especializada en servicios de 
 
 **Causas raíz:** El análisis de causa raíz (Ishikawa) identificó factores en cinco categorías: proceso manual sin verificación automática, validación tecnológica insuficiente, condiciones ambientales no controladas (iluminación, suciedad, acceso difícil), variabilidad entre operarios, y cobertura limitada de auditoría.
 
-**Objetivo del proyecto:** Desarrollar un pipeline de ML capaz de extraer automáticamente la lectura del odómetro a partir de la fotografía y clasificar el resultado como `valid`, `needs_review` o `no_detection` según la confianza global, habilitando la auditoría automática del 100% de las lecturas.
+**Objetivo del proyecto:** Desarrollar un sistema de validación automática de lecturas de medidores de agua potable, basado en aprendizaje profundo y visión por computador, que compare la evidencia fotográfica con el valor registrado y genere indicadores de confianza para apoyar el aseguramiento de calidad del proceso.
 
 ## Arquitectura del Pipeline
 
@@ -217,18 +215,15 @@ Con una sola clase y objetos de tamaño uniforme, la configuración mínima ya c
 
 La mejora fue sustancial, desde un OCR pre-entrenado sin ajustar hasta un modelo fine-tuned con máscara decimal:
 
-| Fase | Configuración | EM (val) |
-|------|--------------|------:|
-| F1: Raw | OCR pre-entrenado sin preproceso | 0.8% |
-| F1: Máscara HSV | Umbrales HSV fijos | 5.0% |
-| F1: Máscara LAB | Canal a* en LAB (adoptado) | 4.2% |
-| F2: Baseline | PP-OCRv5 mobile (det+rec) | 4.2% |
-| F2: Det bypass | Rec-only (sin detector texto) | 15.8% |
-| F2: PP-OCRv4 | English-only, vocabulario reducido | 30.0% |
-| F2: Fine-tune | Diccionario digit-only, 20 ep | 90.0% |
-| F2: Máscara refinada | Extensión a magenta/púrpura | 89.2% val / **92.5% test** |
+| Iteración | Configuración | EM |
+|-----------|--------------|------:|
+| Baseline | Configuración de fábrica (det+rec) | 4.17% (val) |
+| Iter 1 | Bypass del detector de texto (rec-only) | 15.83% (val) |
+| Iter 3 | PP-OCRv4 english-only, vocabulario reducido | 30.00% (val) |
+| Iter 4 | Fine-tuning con diccionario digit-only, 20 ep | 90.00% (val) / 87.50% (test) |
+| Iter 6 | Máscara LAB refinada + re-entrenamiento | 89.17% (val) / **92.50% (test)** |
 
-Los cuatro cambios de mayor impacto fueron: bypass del detector de texto (+11.7 pp), cambio a PP-OCRv4 english-only (+14.2 pp), fine-tuning con diccionario de dígitos (+60 pp) y refinamiento de la máscara LAB (+5 pp en test).
+Los cambios de mayor impacto fueron: bypass del detector de texto (+11.7 pp), cambio a PP-OCRv4 english-only (+14.2 pp), fine-tuning con diccionario de dígitos (+60 pp) y refinamiento de la máscara LAB (+5 pp en test).
 
 El registro completo de todos los experimentos se encuentra en `docs/Detalle de Resultados.md`.
 
@@ -284,7 +279,7 @@ De las 20 imágenes sin detección, 14 no contenían un medidor con odómetro le
 
 Los artefactos completos de evaluación (predicciones, fallos, barridas de threshold) se encuentran en `results/`.
 
-### Análisis de Threshold
+### Análisis del Umbral de Validación
 
 | Threshold | Test Auto-val | Test Precisión | Pilot Auto-val | Pilot Precisión |
 |-----------|--------------|---------------|----------------|----------------|
@@ -293,7 +288,7 @@ Los artefactos completos de evaluación (predicciones, fallos, barridas de thres
 | 0.75 | 85.00% | 98.04% | 70.33% | 91.47% |
 | 0.80 | 60.00% | 100.00% | 53.33% | 90.62% |
 
-El threshold 0.70 ofrece el mejor balance para despliegue operativo con revisión humana.
+El umbral de 0.70 ofrece el mejor balance para despliegue operativo con revisión humana.
 
 ## Explicabilidad
 
