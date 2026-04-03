@@ -1,6 +1,6 @@
 # Lectura Automática de Medidores de Agua
 
-Pipeline de Machine Learning para lectura automática de odómetros en medidores de agua, desarrollado para la empresa SOLYTEC. Combina detección de odómetros (YOLO OBB), preprocesamiento de imagen y lectura de dígitos (PaddleOCR fine-tuned) con un esquema de validación human-in-the-loop.
+Este repositorio contiene el código, modelos, datos y documentación del pipeline de Machine Learning implementado para apoyar a la validación automática de lecturas en medidores de agua, desarrollado para la empresa SOLYTEC. Combina detección de odómetros (YOLO OBB), preprocesamiento de imagen y lectura de dígitos (PaddleOCR fine-tuned) con un esquema de validación human-in-the-loop.
 
 ## Descripción del Problema
 
@@ -16,7 +16,7 @@ SOLYTEC es una empresa ecuatoriana de tecnología especializada en servicios de 
 
 **Causas raíz:** El análisis de causa raíz (Ishikawa) identificó factores en cinco categorías: proceso manual sin verificación automática, validación tecnológica insuficiente, condiciones ambientales no controladas (iluminación, suciedad, acceso difícil), variabilidad entre operarios, y cobertura limitada de auditoría.
 
-**Objetivo del proyecto:** Desarrollar un sistema de validación automática de lecturas de medidores de agua potable, basado en aprendizaje profundo y visión por computador, que compare la evidencia fotográfica con el valor registrado y genere indicadores de confianza para apoyar el aseguramiento de calidad del proceso.
+**Objetivo del proyecto:** Desarrollar un sistema para la validación automática de lecturas de medidores de agua potable, basado en visión por computador y aprendizaje profundo, que analice la evidencia fotográfica, extraiga el valor marcado y genere indicadores de confianza para apoyar el aseguramiento de calidad del proceso de toma de lecturas.
 
 ## Arquitectura del Pipeline
 
@@ -35,6 +35,110 @@ El pipeline opera en seis etapas secuenciales:
 5. **OCR**: Lee los dígitos con PaddleOCR (PP-OCRv4 mobile) fine-tuned con diccionario restringido a dígitos (0-9), operando en modo rec-only (bypass del detector de texto interno).
 
 6. **Validación**: Calcula la confianza global como `det_conf x rec_conf` y clasifica la lectura como `valid` (confianza >= 0.7), `needs_review` (confianza < 0.7) o `no_detection` (sin odómetro detectado).
+
+## Estructura del Proyecto
+
+```
+water-meter-capstone/
+├── app/                         # Aplicación (demo + API)
+│   ├── pipeline.py              # Pipeline de inferencia principal
+│   ├── api.py                   # REST API (FastAPI)
+│   └── demo.py                  # Demo interactivo (Gradio)
+├── utils/                       # Módulos de utilidad
+│   ├── cropping.py              # Recorte OBB
+│   ├── orientation.py           # Resolución de orientación
+│   ├── masking.py               # Máscara de dígitos rojos
+│   └── logging.py               # Configuración de logging
+├── scripts/
+│   ├── data/                    # Pipeline de datos (00-03 + builders)
+│   └── eval/                    # Scripts de evaluación
+├── notebooks/                   # Notebooks de entrenamiento y análisis
+├── models/                      # Modelos entrenados
+│   ├── odometer-detector/       # YOLO OBB (producción)
+│   ├── ocr-reader/              # PaddleOCR fine-tuned (producción)
+│   └── auto-annotator/          # Modelo auxiliar de pre-anotación
+├── data/                        # Datasets de entrenamiento
+│   ├── annotations/             # Anotaciones CVAT + artefactos
+│   ├── obb/                     # Dataset YOLO OBB (train/val/test)
+│   └── ocr/                     # Dataset OCR (train/val/test)
+├── results/                     # Resultados pre-computados de evaluaciones
+├── docs/                        # Informes y documentación técnica
+└── samples/                     # Imágenes de ejemplo para pruebas
+```
+
+## Requisitos Técnicos
+
+- Python 3.12
+- ~800 MB de espacio en disco (modelos + datos)
+- CPU suficiente para inferencia (GPU opcional)
+
+### Dependencias principales
+
+| Componente | Versión | Uso |
+|------------|---------|-----|
+| PyTorch | ≥ 2.10 | Backend de YOLO |
+| Ultralytics | ≥ 8.0 | Detección OBB (YOLOv8) |
+| PaddlePaddle | ≥ 3.0 | Backend de OCR |
+| PaddleOCR | ≥ 3.0 | Reconocimiento de dígitos |
+| OpenCV | ≥ 4.10 | Procesamiento de imagen |
+| Gradio | ≥ 6.0 | Demo interactivo |
+| FastAPI | ≥ 0.115 | API REST |
+| scikit-learn | ≥ 1.0 | Estratificación de datos |
+
+`requirements.in` lista las dependencias directas del proyecto y `requirements.txt` incluye además las sub-dependencias con versiones exactas.
+
+## Instrucciones de Ejecución
+
+```bash
+# 1. Clonar el repositorio
+git clone <repo-url>
+cd water-meter-capstone
+
+# 2. Crear entorno virtual
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+# source .venv/bin/activate   # Linux/Mac
+
+# 3. Instalar dependencias
+pip install -r requirements.txt
+
+# 4. Ejecutar demo interactivo
+python app/demo.py
+# Abrir http://localhost:7860 en el navegador
+
+# 5. Ejecutar API REST (alternativa)
+python -m app.api
+# Documentación en http://localhost:8000/docs
+```
+
+Las imágenes de prueba para la ejecución rápida se pueden encontrar en `samples/` y los casos inválidos en `samples/invalid/`.
+
+Al ejecutar el demo o la API se puede observar:
+- imagen de entrada
+- detección del odómetro con OBB
+- recorte procesado del display
+- lectura predicha
+- confianza global
+- estado final (`valid`, `needs_review` o `no_detection`)
+
+En la demo, estos resultados se presentan como una lectura final, un panel de detalles con los scores de confianza y una galería con las principales etapas visuales del pipeline.
+
+![Demo del Pipeline](docs/images/demo-pipeline-integrado.png)
+
+## Uso Programático
+
+```python
+import cv2
+from app.pipeline import WaterMeterPipeline
+
+pipeline = WaterMeterPipeline()
+image = cv2.imread("samples/00004.jpg")
+result = pipeline.predict(image)
+
+print(f"Lectura: {result.reading}")
+print(f"Confianza: {result.global_confidence:.2f}")
+print(f"Estado: {result.status}")
+```
 
 ## Datos
 
@@ -77,84 +181,12 @@ Variables de estratificación: color de fondo (blanco/negro), número de dígito
 - `data/ocr/` - Dataset OCR para fine-tuning (train/val/test)
 - `samples/` - Imágenes de ejemplo para pruebas del demo
 
-## Estructura del Proyecto
+### Acceso, Anonimización y Uso
 
-```
-water-meter-capstone/
-├── app/                         # Aplicación (demo + API)
-│   ├── pipeline.py              # Pipeline de inferencia principal
-│   ├── api.py                   # REST API (FastAPI)
-│   └── demo.py                  # Demo interactivo (Gradio)
-├── utils/                       # Módulos de utilidad
-│   ├── cropping.py              # Recorte OBB
-│   ├── orientation.py           # Resolución de orientación
-│   ├── masking.py               # Máscara de dígitos rojos
-│   └── logging.py               # Configuración de logging
-├── scripts/
-│   ├── data/                    # Pipeline de datos (00-03 + builders)
-│   └── eval/                    # Scripts de evaluación
-├── notebooks/                   # Notebooks de entrenamiento y análisis
-├── models/                      # Modelos entrenados
-│   ├── odometer-detector/       # YOLO OBB (producción)
-│   ├── ocr-reader/              # PaddleOCR fine-tuned (producción)
-│   └── auto-annotator/          # Modelo auxiliar de pre-anotación
-├── data/                        # Datasets de entrenamiento
-│   ├── annotations/             # Anotaciones CVAT + artefactos
-│   ├── obb/                     # Dataset YOLO OBB (train/val/test)
-│   └── ocr/                     # Dataset OCR (train/val/test)
-├── results/                     # Resultados pre-computados de evaluaciones
-├── docs/                        # Informes y documentación técnica
-└── samples/                     # Imágenes de ejemplo para pruebas
-```
-
-## Requisitos Técnicos
-
-- Python 3.12
-- ~800 MB de espacio en disco (modelos + datos)
-- CPU suficiente para inferencia (GPU opcional)
-
-Dependencias principales: PyTorch, Ultralytics (YOLO), PaddleOCR, PaddlePaddle, Gradio, FastAPI.
-
-## Instrucciones de Ejecución
-
-```bash
-# 1. Clonar el repositorio
-git clone <repo-url>
-cd water-meter-capstone
-
-# 2. Crear entorno virtual
-python -m venv .venv
-.venv\Scripts\activate        # Windows
-# source .venv/bin/activate   # Linux/Mac
-
-# 3. Instalar dependencias
-pip install -r requirements.txt
-
-# 4. Ejecutar demo interactivo
-python app/demo.py
-# Abrir http://localhost:7860 en el navegador
-
-# 5. Ejecutar API REST (alternativa)
-python -m app.api
-# Documentación en http://localhost:8000/docs
-```
-
-![Demo del Pipeline](docs/images/demo-pipeline-integrado.png)
-
-## Uso Programático
-
-```python
-import cv2
-from app.pipeline import WaterMeterPipeline
-
-pipeline = WaterMeterPipeline()
-image = cv2.imread("samples/00004.jpg")
-result = pipeline.predict(image)
-
-print(f"Lectura: {result.reading}")
-print(f"Confianza: {result.global_confidence:.2f}")
-print(f"Estado: {result.status}")
-```
+- El dataset operativo original fue provisto por SOLYTEC exclusivamente para fines del proyecto.
+- El repositorio incluye únicamente los artefactos necesarios para entrenamiento, evaluación y demostración académica.
+- El acceso a datos operativos adicionales queda restringido a la organización.
+- Los resultados compartidos en `results/` y `docs/` se presentan como evidencia técnica del prototipo y del proceso de validación realizado.
 
 ## Modelos
 
@@ -357,6 +389,24 @@ El sistema está diseñado como asistente de auditoría, no como reemplazo del c
 - `docs/S9 - Anexos de Validación.pdf` - Anexos técnicos con evidencias de validación
 - `docs/Detalle de Resultados.md` - Registro completo de todos los experimentos y métricas
 - `results/` - Artefactos de evaluación pre-computados (predicciones, fallos, barridas de threshold)
+
+## Licencias y Atribuciones
+
+Este proyecto utiliza modelos, frameworks, herramientas y recursos de terceros. A continuación se indican los principales componentes externos empleados durante el desarrollo del prototipo, junto con su tipo de licencia o condición de uso.
+
+| Recurso | Tipo | Licencia / condición de uso |
+|---------|------|-----------------------------|
+| YOLOv8 (Ultralytics) | Modelo base para detección OBB | AGPL-3.0 |
+| PaddleOCR / PP-OCRv4 | Modelo preentrenado para reconocimiento OCR | Apache 2.0 |
+| PaddlePaddle | Framework de entrenamiento e inferencia OCR | Apache 2.0 |
+| PyTorch | Framework de deep learning | BSD-3-Clause |
+| Gradio | Interfaz de demostración | Apache 2.0 |
+| FastAPI | Framework para la API web | MIT |
+| CVAT | Herramienta de anotación de imágenes | MIT |
+| Google Colab Pro | Entorno de entrenamiento con GPU | Servicio de pago sujeto a sus propios términos |
+| Dataset de imágenes de medidores | Datos operativos utilizados para entrenamiento y evaluación | Propiedad de SOLYTEC, utilizados con autorización para fines del proyecto (no se redistribuyen públicamente) |
+
+Los derechos y licencias de cada recurso externo pertenecen a sus respectivos autores y organizaciones. El código, modelos derivados, documentación y artefactos de este repositorio se presentan únicamente con fines académicos y de evaluación del proyecto de titulación.
 
 ## Autores
 
