@@ -113,15 +113,7 @@ python -m app.api
 
 Las imágenes de prueba para la ejecución rápida se pueden encontrar en `samples/` y los casos inválidos en `samples/invalid/`.
 
-Al ejecutar el demo o la API se puede observar:
-- imagen de entrada
-- detección del odómetro con OBB
-- recorte procesado del display
-- lectura predicha
-- confianza global
-- estado final (`valid`, `needs_review` o `no_detection`)
-
-En la demo, estos resultados se presentan como una lectura final, un panel de detalles con los scores de confianza y una galería con las principales etapas visuales del pipeline.
+La demo presenta la interfaz completa del pipeline con campos individuales para lectura, estado, confianza (global, detección y reconocimiento) y tiempo de procesamiento. La galería inferior derecha muestra las cuatro etapas de forma visual: detección, recorte, reorientación y enmascaramiento de decimales. También se incluye un panel desplegable que permite visualizar la respuesta JSON devuelta por el pipeline.
 
 ![Demo del Pipeline](docs/images/demo-pipeline-integrado.png)
 
