@@ -117,6 +117,8 @@ La demo presenta la interfaz completa del pipeline con campos individuales para 
 
 ![Demo del Pipeline](docs/images/demo-pipeline-integrado.png)
 
+**Video demostrativo:** https://youtu.be/PEs_WnlbImI
+
 ## Uso Programático
 
 ```python
