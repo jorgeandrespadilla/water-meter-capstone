@@ -36,6 +36,8 @@ El pipeline opera en seis etapas secuenciales:
 
 6. **Validación**: Calcula la confianza global como `det_conf x rec_conf` y clasifica la lectura como `valid` (confianza >= 0.7), `needs_review` (confianza < 0.7) o `no_detection` (sin odómetro detectado).
 
+![Ejemplo de procesamiento del pipeline](docs/images/pipeline_flow.png)
+
 ## Estructura del Proyecto
 
 ```
