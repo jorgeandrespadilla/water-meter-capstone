@@ -10,7 +10,9 @@ Usage:
 """
 
 import argparse
+import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
 
 import cv2
@@ -36,10 +38,18 @@ def create_demo(
     def process_image(
         image: np.ndarray | None,
         validation_threshold: float,
-    ) -> tuple[str, str, list]:
+    ) -> dict:
         """Run pipeline and return results for Gradio outputs."""
         if image is None:
-            return "", "No image provided.", []
+            return {
+                reading_output: "",
+                status_output: "",
+                confidence_output: "",
+                total_time_output: "",
+                warnings_output: "",
+                stage_gallery: [],
+                debug_output: "",
+            }
 
         bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         result = pipeline.predict(
@@ -48,36 +58,31 @@ def create_demo(
             collect_intermediates=True,
         )
 
-        reading_text = result.reading or ""
+        reading_text = result.reading or "Sin lectura"
 
-        lines = [
-            f"Status:          {result.status}",
-            f"Reading:         {result.reading or '(none)'}",
-            f"Global conf:     {result.global_confidence:.1%}",
-            f"  Detection:     {result.detection_confidence:.1%}",
-            f"  Recognition:   {result.recognition_confidence:.1%}",
-            f"  Orientation:   {result.orientation_confidence:.1%} ({result.orientation_method})",
-            "",
-            f"Time total:      {result.timing_ms.get('total', 0):.0f} ms",
-            f"  Detection:     {result.timing_ms.get('detection', 0):.0f} ms",
-            f"  Preprocessing: {result.timing_ms.get('preprocessing', 0):.0f} ms",
-            f"  OCR:           {result.timing_ms.get('ocr', 0):.0f} ms",
-            f"    OCR passes:  {result.timing_ms.get('ocr_passes', 0)}",
-            f"    Orientation: {result.timing_ms.get('orientation_ocr', 0):.0f} ms",
-        ]
-        if result.warnings:
-            lines.append("")
-            for warning in result.warnings:
-                lines.append(f"Warning: {warning}")
-
-        info_text = "\n".join(lines)
+        status_labels = {
+            "valid": "Válida",
+            "needs_review": "Requiere revisión",
+            "no_detection": "Sin detección",
+        }
+        status_display = status_labels.get(result.status, result.status)
+        status_text = status_display
+        warnings_text = "\n".join(f"Aviso: {warning}" for warning in result.warnings)
+        confidence_text = "\n".join(
+            [
+                f"Global: {result.global_confidence:.1%}",
+                f"Detección: {result.detection_confidence:.1%}",
+                f"Reconocimiento: {result.recognition_confidence:.1%}",
+            ]
+        )
+        total_time_text = f"{result.timing_ms.get('total', 0):.0f} ms"
 
         gallery = []
         stage_labels = [
-            ("annotated", "1. Detection"),
-            ("crop", "2. OBB Crop"),
-            ("oriented", "3. Oriented"),
-            ("masked", "4. Masked"),
+            ("annotated", "1. Detección"),
+            ("crop", "2. Recorte"),
+            ("oriented", "3. Orientación"),
+            ("masked", "4. Máscara"),
         ]
         for key, label in stage_labels:
             img = result.intermediates.get(key)
@@ -85,87 +90,133 @@ def create_demo(
                 rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 gallery.append((rgb, label))
 
-        return reading_text, info_text, gallery
+        # Debug: full result as JSON (exclude intermediates — not serializable)
+        debug_dict = asdict(result)
+        debug_dict.pop("intermediates", None)
+        debug_json = json.dumps(debug_dict, indent=2, ensure_ascii=False)
 
-    def clear_all() -> tuple[None, str, str, list]:
-        """Reset input and outputs to the initial empty state."""
-        return None, "", "", []
+        return {
+            reading_output: reading_text,
+            status_output: status_text,
+            confidence_output: confidence_text,
+            total_time_output: total_time_text,
+            warnings_output: warnings_text,
+            stage_gallery: gallery,
+            debug_output: debug_json,
+        }
 
-    with gr.Blocks(title="Water Meter Reading Demo") as demo:
+    with gr.Blocks(title="Lectura de Medidores de Agua") as demo:
         gr.Markdown(
             """
-        # Water Meter Reading Demo
+        # Lectura Automática de Medidores de Agua
 
-        Upload an image of a water meter to automatically read the odometer.
-        The pipeline uses **YOLO OBB** for detection and **PaddleOCR** (fine-tuned) for digit recognition.
+        Sistema para la validación automática de lecturas de medidores de agua potable,
+        basado en visión por computador y aprendizaje profundo.
+        Analiza la fotografía del medidor, extrae el valor del odómetro y genera
+        indicadores de confianza para priorizar la revisión humana.
 
-        **Detector:** YOLOv8n-OBB (baseline) | **OCR:** en_PP-OCRv4_mobile_rec (fine-tuned, digit-only)
+        Suba una imagen del medidor para obtener la lectura.
         """
         )
 
         with gr.Row(equal_height=True):
             with gr.Column(scale=0, min_width=180):
-                read_btn = gr.Button("Read Meter", variant="primary", size="lg")
-                clear_btn = gr.Button("Clear", variant="secondary")
+                read_btn = gr.Button("Obtener Lectura", variant="primary", size="lg")
+                clear_btn = gr.ClearButton(value="Limpiar", variant="secondary")
             with gr.Column(scale=1, min_width=320):
                 conf_slider = gr.Slider(
                     minimum=0.1,
                     maximum=1.0,
                     value=0.7,
                     step=0.05,
-                    label="Validation Threshold",
-                    info="Minimum global confidence required to mark a reading as valid.",
+                    label="Umbral de validación",
+                    info="Confianza mínima para considerar una lectura como válida.",
                 )
 
         with gr.Row():
             with gr.Column(scale=1):
                 input_image = gr.Image(
-                    label="Input Image",
+                    label="Imagen de entrada",
                     type="numpy",
                     sources=["upload", "webcam", "clipboard"],
                 )
 
             with gr.Column(scale=1):
                 reading_output = gr.Textbox(
-                    label="Reading",
+                    label="Lectura",
                     lines=1,
                     max_lines=1,
                 )
-                info_output = gr.Textbox(
-                    label="Details",
-                    lines=10,
+                status_output = gr.Textbox(
+                    label="Estado",
+                    lines=1,
+                    max_lines=1,
                 )
-                with gr.Accordion("Pipeline Stages", open=False):
-                    stage_gallery = gr.Gallery(
-                        label="Pipeline Stages",
-                        columns=2,
-                        object_fit="contain",
-                        height=280,
+                confidence_output = gr.Textbox(
+                    label="Confianza",
+                    lines=3,
+                )
+                total_time_output = gr.Textbox(
+                    label="Tiempo total",
+                    lines=1,
+                    max_lines=1,
+                )
+                warnings_output = gr.Textbox(
+                    label="Advertencias",
+                    lines=3,
+                )
+                stage_gallery = gr.Gallery(
+                    label="Etapas del proceso",
+                    columns=2,
+                    object_fit="contain",
+                    height=280,
+                )
+                with gr.Accordion("Respuesta completa (debug)", open=False):
+                    debug_output = gr.Code(
+                        label="JSON",
+                        language="json",
+                        lines=15,
                     )
 
-        outputs = [reading_output, info_output, stage_gallery]
+        outputs = [
+            reading_output,
+            status_output,
+            confidence_output,
+            total_time_output,
+            warnings_output,
+            stage_gallery,
+            debug_output,
+        ]
+
+        clear_btn.add(
+            [
+                input_image,
+                reading_output,
+                status_output,
+                confidence_output,
+                total_time_output,
+                warnings_output,
+                stage_gallery,
+                debug_output,
+            ]
+        )
 
         read_btn.click(
             fn=process_image,
             inputs=[input_image, conf_slider],
             outputs=outputs,
         )
-        clear_btn.click(
-            fn=clear_all,
-            inputs=[],
-            outputs=[input_image, reading_output, info_output, stage_gallery],
-        )
 
         gr.Markdown(
             """
         ---
-        **Pipeline stages shown in gallery:**
-        1. **Detection** - YOLO OBB overlay on original image
-        2. **OBB Crop** - extracted odometer region (aspect-ratio corrected)
-        3. **Oriented** - hybrid 0°/180° correction (red-position cue → dual-OCR fallback)
-        4. **Masked** - after red decimal digit removal (LAB v4)
+        **Etapas del proceso:**
+        1. **Detección** — localización del odómetro en la imagen
+        2. **Recorte** — extracción de la región del odómetro
+        3. **Orientación** — corrección automática de rotación (0° / 180°)
+        4. **Máscara** — eliminación de dígitos decimales (rojos)
 
-        The OCR reader then processes the masked crop to produce the final reading.
+        Finalmente, el modelo OCR procesa la imagen preparada para obtener la lectura.
         """
         )
 
