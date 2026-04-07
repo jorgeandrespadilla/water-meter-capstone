@@ -381,7 +381,7 @@ El sistema está diseñado como asistente de auditoría, no como reemplazo del c
 
 ## Documentación
 
-- `docs/Informe Proyecto Capstone.pdf` - Informe final del proyecto capstone
+- `docs/Informe Proyecto Capstone.pdf` - Informe final del proyecto capstone (incluye detalles sobre la ejecución del proyecto y anexos)
 - `docs/Detalle de Resultados.md` - Registro completo de todos los experimentos y métricas
 - `results/` - Artefactos de evaluación pre-computados (predicciones, fallos, barridas de threshold)
 
