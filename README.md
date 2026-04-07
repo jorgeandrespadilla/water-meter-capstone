@@ -11,7 +11,7 @@ SOLYTEC es una empresa ecuatoriana de tecnología especializada en servicios de 
 **Problemas identificados:**
 - Tasas de error del 3-5% en lecturas digitadas
 - Imágenes inválidas (borrosas, mal encuadradas, sin medidor) que rompen la trazabilidad
-- Auditoría reactiva: la revisión manual solo cubre muestreos aleatorios del 3-5% del volumen mensual
+- Auditoría reactiva: la revisión manual solo cubre muestreos aleatorios del 5-10% del volumen mensual
 - Sin indicador de confianza ni coincidencia automática foto-lectura
 
 **Causas raíz:** El análisis de causa raíz (Ishikawa) identificó factores en cinco categorías: proceso manual sin verificación automática, validación tecnológica insuficiente, condiciones ambientales no controladas (iluminación, suciedad, acceso difícil), variabilidad entre operarios, y cobertura limitada de auditoría.
