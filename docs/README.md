@@ -4,8 +4,7 @@
 
 | Documento | Descripción |
 |-----------|-------------|
-| `S8 - Borrador Informe Final.pdf` | Informe final del proyecto capstone |
-| `S9 - Anexos de Validación.pdf` | Anexos técnicos con evidencias de validación |
+| `Informe Proyecto Capstone.pdf` | Informe final del proyecto capstone |
 | `Detalle de Resultados.md` | Registro completo de experimentos y métricas comparativas |
 
 ## Documentación Técnica en el Repositorio

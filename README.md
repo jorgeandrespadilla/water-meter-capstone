@@ -381,8 +381,7 @@ El sistema está diseñado como asistente de auditoría, no como reemplazo del c
 
 ## Documentación
 
-- `docs/S8 - Borrador Informe Final.pdf` - Informe final del proyecto capstone
-- `docs/S9 - Anexos de Validación.pdf` - Anexos técnicos con evidencias de validación
+- `docs/Informe Proyecto Capstone.pdf` - Informe final del proyecto capstone
 - `docs/Detalle de Resultados.md` - Registro completo de todos los experimentos y métricas
 - `results/` - Artefactos de evaluación pre-computados (predicciones, fallos, barridas de threshold)
 
