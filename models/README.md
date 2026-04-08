@@ -21,7 +21,7 @@ de solo dígitos (0-9), entrenado sobre crops con máscara LAB de dígitos decim
 
 | Métrica | Valor |
 |---------|-------|
-| Exact Match | 0.892 |
+| Exact Match (val) | 89.17% |
 
 ### auto-annotator
 

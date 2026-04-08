@@ -9,7 +9,7 @@ Notebooks de Jupyter para entrenamiento, evaluación y análisis del pipeline.
 | `03_train_odometer_detector.ipynb` | Entrenamiento iterativo del detector de odómetros YOLO OBB (1,199 imágenes) |
 | `04_eval_ocr.ipynb` | Evaluación de modelos OCR: comparación de preprocessing y configuraciones |
 | `05_finetune_ocr.ipynb` | Fine-tuning del reconocedor PaddleOCR con diccionario de solo dígitos |
-| `06_explainability.ipynb` | Análisis de explicabilidad: Grad-CAM, EigenCAM, SHAP, LIME, oclusión |
+| `06_explainability.ipynb` | Análisis de explicabilidad: Eigen-CAM, Grad-CAM, oclusión |
 | `07_visualize_pipeline_evaluations.ipynb` | Visualización comparativa de métricas: evolución por iteración, threshold sweep |
 
 ## Ejecución

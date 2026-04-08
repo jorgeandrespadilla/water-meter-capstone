@@ -4,7 +4,7 @@ Este repositorio contiene el código, modelos, datos y documentación del pipeli
 
 ## Descripción del Problema
 
-SOLYTEC es una empresa ecuatoriana de tecnología especializada en servicios de gestión de medidores de agua, con más de 20 años de operaciones. La empresa gestiona ciclos de lectura para la facturación mensual de empresas de agua potable.
+SOLYTEC es una empresa ecuatoriana de servicios tecnológicos que brinda soluciones a empresas de agua potable en Ecuador, con más de 20 años de operación en el sector. Uno de sus procesos principales es la gestión del ciclo de toma de lecturas de medidores para la facturación mensual.
 
 **Proceso actual:** Los operarios capturan fotografías de los medidores en campo y registran manualmente el valor de consumo. El sistema actual solo aplica una validación lógica básica (lectura >= lectura anterior), sin verificación sistemática entre la foto capturada y el valor digitado.
 
@@ -365,7 +365,7 @@ El sistema está diseñado como asistente de auditoría, no como reemplazo del c
 | `03_train_odometer_detector.ipynb` | Entrenamiento del detector YOLO OBB (iterativo) |
 | `04_eval_ocr.ipynb` | Evaluación de modelos OCR |
 | `05_finetune_ocr.ipynb` | Fine-tuning del reconocedor OCR |
-| `06_explainability.ipynb` | Análisis de explicabilidad (Grad-CAM, SHAP, LIME) |
+| `06_explainability.ipynb` | Análisis de explicabilidad (Eigen-CAM, Grad-CAM, oclusión) |
 | `07_visualize_pipeline_evaluations.ipynb` | Visualización comparativa de resultados |
 
 ## Pipeline de Datos
